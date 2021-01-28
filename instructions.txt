@@ -1,0 +1,13 @@
+Rajouter un champ input qui fait une recherche full-text dans le nom et prénom de l'utilisateur (non sensible à la casse). Bonus pour la gestion des accents.
+Rajouter une colonne age, avec flèches pour tri (fontawesome ou image ou svg, etc..)
+Au clic sur l'entête de colonne, les utilisateurs doivent être triés par age (ordre croissant / décroissant / pas triés), et les flèches s'adapter en conséquence (couleur, ou sens)
+Faire en sorte qu'au clic sur le bouton fetch on rajoute 20 users, au lieu de les remplacer. 
+Vous êtes libres de faire toute modification ou ajout que vous trouverez pertinents pour l'application et n'êtes pas limités ni en terme d'UI, ni en terme de fonctionnalités (si vous voulez vous faire plaisir, n'hésitez pas) 
+
+
+Ressources : 
+Pour le tri vous pouvez utiliser les svg de heroicons.com (sort-ascending, sort-descending, view-list) si vous voulez.
+
+Vous devez rendre un lien vers votre repo github. Il doit être publique, et les commits doivent être clairement identifiables (un commit pour votre travail avant les fonctionnalités, et un commit par fonctionnalité demandée).
+
+Le devoir est personnel et noté.
