@@ -5,22 +5,15 @@
     <button id="fetch-users" @click="fetchUsers">
       Fetch users
     </button>
-
-    <label>
-      <input v-model="genderFilter" type="checkbox" value="male" />
-      Hommes
-    </label>
-    <label>
-      <input v-model="genderFilter" type="checkbox" value="female" />
-      Femmes
-    </label>
+    <input v-model="genderFilter" type="checkbox" value="male" />
+    Hommes
+    <input v-model="genderFilter" type="checkbox" value="female" />
+    Femmes
     <div id="none">
       {{ genderFilter }}
     </div>
     <div>
-      <label>
-        <input v-model="filterByName" placeholder="Rechercher un utilisateur" />
-      </label>
+      <input v-model="filterByName" placeholder="Rechercher un utilisateur" />
     </div>
     <table id="tbl-users" class="table table-hover">
       <thead>
@@ -86,6 +79,9 @@ export default {
           .toLowerCase()
           .includes(this.filterByName.toLowerCase());
       });
+    },
+    agesFiltered() {
+      return null;
     }
   },
   methods: {
@@ -119,7 +115,7 @@ li {
 a {
   color: #42b983;
 }
-#none{
-  display:none;
+#none {
+  display: none;
 }
 </style>
