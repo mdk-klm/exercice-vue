@@ -23,21 +23,46 @@
           <th>Email</th>
           <th>Tel</th>
           <th>Genre</th>
-          <th @click="sort('user.dob.age')">
-            Age
-            <svg
-              data-v-1061b08a=""
-              width="16"
-              height="16"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 320 512"
-            >
-              <path
-                data-v-1061b08a=""
-                fill="currentColor"
-                d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"
-             />
-            </svg>
+          <th @click="agesFiltered">
+            <div v-if="(currentSortDir = 'asc')">
+              Age
+              <svg
+                aria-hidden="true"
+                height="14"
+                width="14"
+                focusable="false"
+                data-prefix="fas"
+                data-icon="sort-up"
+                class="svg-inline--fa fa-sort-up fa-w-10"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 320 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M279 224H41c-21.4 0-32.1-25.9-17-41L143 64c9.4-9.4 24.6-9.4 33.9 0l119 119c15.2 15.1 4.5 41-16.9 41z"
+                ></path>
+              </svg>
+            </div>
+            <div v-else>
+              <svg
+                aria-hidden="true"
+                height="14"
+                width="14"
+                focusable="false"
+                data-prefix="fas"
+                data-icon="sort-down"
+                class="svg-inline--fa fa-sort-down fa-w-10"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 320 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41z"
+                ></path>
+              </svg>
+            </div>
           </th>
         </tr>
       </thead>
@@ -52,8 +77,10 @@
         </tr>
       </tbody>
     </table>
-    
-  debug: sort={{currentSort}}, dir={{currentSortDir}}
+
+    <div id="none2">
+      debug: sort={{ currentSort }}, dir={{ currentSortDir }}
+    </div>
   </div>
 </template>
 
@@ -67,8 +94,8 @@ export default {
       errored: false,
       genderFilter: ["male", "female"],
       filterByName: "",
-      currentSort:'age',
-      currentSortDir:'asc'
+      currentSort: "age",
+      currentSortDir: "asc"
     };
   },
   computed: {
@@ -84,12 +111,12 @@ export default {
           .includes(this.filterByName.toLowerCase());
       });
     },
-     agesFiltered() {
-      return this.users.dob.age.slice().sort((a,b) => {
+    agesFiltered() {
+      return this.namesFiltered.slice().sort((a, b) => {
         let modifier = 1;
-        if(this.currentSortDir === 'desc') modifier = -1;
-        if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
-        if(a[this.currentSort] > b[this.currentSort]) return modifier;
+        if (this.currentSortDir === "desc") modifier = -1;
+        if (a.dob.age < b.dob.age) return -1 * modifier;
+        if (a.dob.age > b.dob.age) return modifier;
         return 0;
       });
     }
@@ -98,19 +125,19 @@ export default {
     fetchUsers() {
       axios
         .get("https://randomuser.me/api/?results=20")
-        .then(response => (this.results = response.data.results))
+        .then(response => (this.results.push.apply(this.results, response.data.results))
         .catch(error => {
           console.log(error);
           this.errored = true;
-        });
+        }));
     },
-     sort(s) {
-    //if s == current sort, reverse
-    if(s === this.currentSort) {
-      this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
+    sort(s) {
+      //if s == current sort, reverse
+      if (s === this.currentSort) {
+        this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
+      }
+      this.currentSort = s;
     }
-    this.currentSort = s;
-  }
   }
 };
 </script>
@@ -133,6 +160,9 @@ a {
   color: #42b983;
 }
 #none {
+  display: none;
+}
+#none2 {
   display: none;
 }
 </style>
