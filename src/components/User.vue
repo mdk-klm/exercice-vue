@@ -23,8 +23,8 @@
           <th>Email</th>
           <th>Tel</th>
           <th>Genre</th>
-          <th @click="agesFiltered">
-            <div v-if="(currentSortDir = 'asc')">
+          <th @click="sort('age')">
+            <div v-if="(currentSortDir = 'desc')">
               Age
               <svg
                 aria-hidden="true"
@@ -132,7 +132,7 @@ export default {
         }));
     },
     sort(s) {
-      //if s == current sort, reverse
+      
       if (s === this.currentSort) {
         this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
       }
