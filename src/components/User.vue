@@ -1,31 +1,45 @@
 <template>
   <div class="headt">
-    <button class="btn btn-primary" @click="fetchUsers">
+    <button
+      class="btn btn-primary"
+      @click="fetchUsers"
+    >
       Réupérer des utilisateurs
     </button>
     <label>
       <input
         v-model="genderFilter"
         type="checkbox"
+        :disabled="genderFilter.length<2 && genderFilter.includes('male')"
         value="male"
-        :disabled="genderFilter.length < 2 && genderFilter.includes('') === 'male'"
-      />
+      >
       Hommes
     </label>
     <label>
       <input
         v-model="genderFilter"
         type="checkbox"
+        :disabled="genderFilter.length<2 && genderFilter.includes('female')"
         value="female"
-        :disabled="genderFilter.length < 2 && genderFilter.includes('') === 'male'"
-      />
+      >
       Femmes
     </label>
     <label>
       Rechercher :
-      <input v-model="search" type="text" placeholder="Rechercher" />
+      <input
+        v-model="search"
+        type="text"
+        placeholder="Rechercher"
+      >
+    </label> 
+    <button
+      class="btn btn-primary"
+      @click="resetFilters"
+    >
+      reset
+    </button> 
+    <label>Trier par âge :          
     </label>
-    <label>Trier par âge : </label>
     <p v-if="sortDirection === ''">
       Par défaut
     </p>
@@ -37,18 +51,15 @@
     </p>
   </div>
   <p v-if="users.length">
-    il y a <strong>{{ searchedUsers.length }} </strong> utilisateur{{
-      searchedUsers.length > 1 ? "s" : ""
-    }}
-    filtré{{ searchedUsers.length > 1 ? "s" : "" }} sur
-    <strong>{{ users.length }}</strong> utilisateur{{
-      searchedUsers.length > 1 ? "s" : ""
-    }}
-
-    <button @click="resetFilter()">Reset filter</button>
+    il y a <strong>{{ searchedUsers.length }}</strong> utilisateur{{ searchedUsers.length > 1 ? 's' : '' }} filtré{{ searchedUsers.length > 1 ? 's' : '' }} sur {{ users.length }} totaux
   </p>
-  <p v-else>il n'y a <strong>aucun</strong> utilisateur</p>
-  <table v-if="users.length" class="table table-hover">
+  <p v-else>
+    il n'y a <strong>aucun</strong> utilisateur récupéré
+  </p>
+  <table
+    v-if="users.length"
+    class="table table-hover"
+  >
     <thead>
       <tr>
         <th>Photo</th>
@@ -57,121 +68,124 @@
         <th>Tel</th>
         <th>Genre</th>
         <th>
-          <button class="btn btn-light" @click="changeSort">
+          <button
+            class="btn btn-light"
+            @click="changeSort"
+          >
             Âge
             <i
               v-if="sortDirection"
               class="fa"
-              :class="[sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down']"
+              :class="[ sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down' ]"
             />
           </button>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="user in searchedUsers" :key="user.email">
-        <td><img :src="user.picture.thumbnail" /></td>
-        <td>{{ user.name.first }} {{ user.name.last }}</td>
+      <tr
+        v-for="user in searchedUsers"
+        :key="user.email"
+      >
+        <td><img :src="user.avatarUrl"></td>
+        <td>{{ user.firstName }} {{ user.lastName }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.phone }}</td>
         <td>{{ user.gender }}</td>
-        <td>{{ user.dob.age }}</td>
+        <td>{{ user.birthDate }}</td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 export default {
-  name: "App",
-  components: {},
-  props: ["gender"],
+  name: 'App',
+  components: {
+  },
   data() {
     return {
       users: [],
       errored: false,
-      genderFilter: (this.$route.query.gender || "male, female").split(","),
-      search: this.$route.query.search || "",
-      sortDirection: this.$route.query.sort || ""
-    };
+      genderFilter: (this.$route.query.gender || 'male,female').split(','),
+      search: this.$route.query.search || '',
+      sortDirection: this.$route.query.sort || ''
+    }
   },
   computed: {
     searchedUsers() {
       return this.users
-        .filter(user => this.genderFilter.includes(user.gender))
-        .filter(user => {
-          return (
-            user.name.first.toLowerCase().includes(this.search.toLowerCase()) ||
-            user.name.last.toLowerCase().includes(this.search.toLowerCase())
-          );
-        })
-        .sort((a, b) => {
-          if (!this.sortDirection) return 0;
-          const modifier = this.sortDirection === "desc" ? -1 : 1;
-          return (a.dob.age - b.dob.age) * modifier;
-        });
-    }
-  },
-  created() {
-    this.fetchUsers();
+      .filter((user) => this.genderFilter.includes(user.gender))
+      .filter((user) => {
+        return (user.firstName.toLowerCase().includes(this.search.toLowerCase())) ||
+        (user.name.last.toLowerCase().includes(this.search.toLowerCase()))
+      })
+      .sort((a,b) => {
+        if (!this.sortDirection) return 0;
+        const  modifier = this.sortDirection === 'desc' ? -1 : 1;
+        return (a.dob.age - b.dob.age) * modifier;
+      })
+    },
   },
 
   watch: {
-    genderFilter() {
-      this.updateQuery();
+    genderFilter(){
+      this.updateQuery()
     },
-    search() {
-      this.updateQuery();
+    search(){
+      this.updateQuery()
     },
-    sortDirection() {
-      this.updateQuery();
+    sortDirection(){
+      this.updateQuery()
     }
   },
-
+  //created(){ this.fetchUsers()},
+  
   methods: {
-    fetchUsers() {
+    fetchUsers() { 
       axios
-        .get("https://randomuser.me/api/?results=20")
+        .get('http://localhost:8081/users')
         .then(response => {
-          this.users = [...this.users, ...response.data.results];
-          //this.users = this.users.concat(response.data.results)
+         this.users = [...this.users, ...response.data]
+         //this.users = this.users.concat(response.data.results)
         })
         .catch(error => {
-          console.error(error);
-          this.errored = true;
-        });
+          console.error(error)
+          this.errored = true
+        })
     },
     changeSort() {
-      if (this.sortDirection === "") {
-        this.sortDirection = "asc";
-        return this.users;
-      } else if (this.sortDirection === "asc") {
-        this.sortDirection = "desc";
-      } else if (this.sortDirection === "desc") {
-        this.sortDirection = "";
+      if (this.sortDirection === ''){
+        this.sortDirection = 'asc'
+        return this.users
+      }else if (this.sortDirection === 'asc'){
+        this.sortDirection = 'desc'
+      } else if (this.sortDirection === 'desc'){
+        this.sortDirection = ''
       }
     },
-    updateQuery() {
-      const query = {};
-      if (this.genderFilter.length < 2) {
-        query.gender = this.genderFilter.join("");
+    updateQuery(){
+      const query= {}
+      if (this.genderFilter.length < 2){
+        query.gender = this.genderFilter.join('')
       }
-      if (this.search) {
-        query.search = this.search;
+      if (this.search){
+        query.search = this.search
       }
-      if (this.sortDirection) {
-        query.sort = this.sortDirection;
+      if (this.sortDirection){
+        query.sort = this.sortDirection
       }
-      this.$router.push({ query });
+      this.$router.push({query})
     },
-    resetFilter() {
-      (this.genderFilter = ["male, female"]),
-        (this.search = ""),
-        (this.sort = "");
+    resetFilters(){
+      this.genderFilter = ['male','female']
+      this.search = ''
+      this.sortDirection = ''
     }
-  }
-};
+  },
+  
+}
 </script>
 
 <style>
@@ -183,15 +197,15 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-.headt {
+.headt{
   display: flex;
   justify-content: space-around;
 }
-.btn-primary {
-  background-color: #41b883 !important;
-  border-color: #41b883 !important;
+.btn-primary{
+  background-color: #41B883!important;
+  border-color: #41B883!important;
 }
-.btn-primary:hover {
-  background-color: #35495e !important;
+.btn-primary:hover{
+  background-color: #35495E!important;
 }
 </style>
